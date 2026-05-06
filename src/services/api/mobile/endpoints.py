@@ -1,6 +1,7 @@
-from ninja import Router
+from dmr.routing import path
 
-# Create mobile API router
-router = Router()
+from services.api.mobile.users.endpoints import MeController
 
-router.add_router("users", "services.api.mobile.users.endpoints.router")
+urlpatterns = [
+    path("users/me", MeController.as_view(), name="me"),
+]

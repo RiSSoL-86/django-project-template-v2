@@ -1,14 +1,33 @@
 from django.core.exceptions import SuspiciousOperation
 from django.http import HttpRequest
-from ninja.security import HttpBearer
+from dmr.openapi.objects import SecurityScheme
+from dmr.security import SyncAuth
 from oauth2_provider.oauth2_backends import get_oauthlib_core
 
 
-class AuthBearer(HttpBearer):
+class AuthBearer(SyncAuth):
+    @property
+    def security_schemes(self) -> dict[str, SecurityScheme]:
+        return {
+            "BearerAuth": SecurityScheme(
+                type="http",
+                scheme="bearer",
+                bearer_format="JWT",
+            ),
+        }
 
-    def authenticate(self, request: HttpRequest, token: str):
+    @property
+    def security_requirement(self) -> dict[str, list[str]]:
+        return {"BearerAuth": []}
+
+    def authenticate(self, request: HttpRequest):
         if request is None:
             return None
+
+        auth_header = request.headers.get("Authorization")
+        if not auth_header or not auth_header.startswith("Bearer "):
+            return None
+
         oauthlib_core = get_oauthlib_core()
 
         try:

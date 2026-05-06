@@ -7,6 +7,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # 3rd party apps
     "oauth2_provider",
+    "dmr",
     # project apps
     "apps.users",
 ]

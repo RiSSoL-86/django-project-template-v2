@@ -1,15 +1,25 @@
-from ninja import Router
+from http import HTTPStatus
 
+from dmr import Controller, ResponseSpec
+from dmr.plugins.pydantic import PydanticSerializer
+
+from services.api.auth import AuthBearer
 from services.api.mobile.users.services.me import MeService
 from services.api.mobile.users.shemas import UserResponse
 
-router = Router()
 
+class MeController(Controller[PydanticSerializer]):
+    auth = [AuthBearer()]
+    responses = [
+        ResponseSpec(
+            UserResponse,
+            status_code=HTTPStatus.OK,
+        ),
+    ]
 
-@router.get("me", response=UserResponse)
-def get_me(request) -> UserResponse:
-    user, _ = request.auth
+    def get(self, request) -> UserResponse:
+        user, _ = request.auth
 
-    serice = MeService()
-    result = serice.execute(user)
-    return result
+        service = MeService()
+        result = service.execute(user)
+        return result
