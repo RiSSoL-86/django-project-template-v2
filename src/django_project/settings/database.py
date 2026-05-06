@@ -6,6 +6,6 @@ DATABASES = {
         "PASSWORD": config["database"]["password"],
         "HOST": config["database"]["host"],
         "PORT": config["database"]["port"],
-        "ATOMIC_REQUESTS": True,
+        "ATOMIC_REQUESTS": False,
     }
 }

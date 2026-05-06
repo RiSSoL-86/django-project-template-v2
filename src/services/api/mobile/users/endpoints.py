@@ -17,7 +17,7 @@ class MeController(AuthenticatedController):
         ),
     ]
 
-    def get(self) -> UserResponse:
+    async def get(self) -> UserResponse:
         service = MeService()
-        result = service.execute(self.user)
+        result = await service.execute(self.user)
         return UserResponse.model_validate(result)

@@ -1,10 +1,11 @@
+from asgiref.sync import sync_to_async
 from django.core.exceptions import SuspiciousOperation
 from dmr.openapi.objects import SecurityScheme
-from dmr.security import SyncAuth
+from dmr.security import AsyncAuth
 from oauth2_provider.oauth2_backends import get_oauthlib_core
 
 
-class AuthBearer(SyncAuth):
+class AuthBearer(AsyncAuth):
     @property
     def security_schemes(self) -> dict[str, SecurityScheme]:
         return {
@@ -15,7 +16,7 @@ class AuthBearer(SyncAuth):
     def security_requirement(self) -> dict[str, list[str]]:
         return {"BearerAuth": []}
 
-    def __call__(self, endpoint, controller):
+    async def __call__(self, endpoint, controller):
         request = controller.request
 
         auth_header = request.headers.get("Authorization")
@@ -25,7 +26,9 @@ class AuthBearer(SyncAuth):
         oauthlib_core = get_oauthlib_core()
 
         try:
-            valid, r = oauthlib_core.verify_request(request, scopes=[])
+            valid, r = await sync_to_async(oauthlib_core.verify_request)(
+                request, scopes=[]
+            )
         except ValueError as error:
             if str(error) == "Invalid hex encoding in query string.":
                 raise SuspiciousOperation(error)
