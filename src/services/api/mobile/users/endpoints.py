@@ -1,14 +1,14 @@
 from http import HTTPStatus
 
-from dmr import Controller, ResponseSpec
-from dmr.plugins.pydantic import PydanticSerializer
+from dmr import ResponseSpec
 
 from services.api.auth import AuthBearer
+from services.api.common.controllers import AuthenticatedController
 from services.api.mobile.users.services.me import MeService
 from services.api.mobile.users.shemas import UserResponse
 
 
-class MeController(Controller[PydanticSerializer]):
+class MeController(AuthenticatedController):
     auth = [AuthBearer()]
     responses = [
         ResponseSpec(
@@ -17,9 +17,7 @@ class MeController(Controller[PydanticSerializer]):
         ),
     ]
 
-    def get(self, request) -> UserResponse:
-        user, _ = request.auth
-
+    def get(self) -> UserResponse:
         service = MeService()
-        result = service.execute(user)
-        return result
+        result = service.execute(self.user)
+        return UserResponse.model_validate(result)

@@ -15,8 +15,6 @@ psycopg2-binary = {version = "==2.9.9", markers = "sys_platform == 'darwin'"}
 django-oauth-toolkit = "==3.0.1"
 django-modern-rest = {version = "==0.8.0", extras = ["openapi"]}
 redis = "==6.4.0"
-pydantic = ">=2.0.0"
-pyjwt = ">=2.0.0"
 
 [dev-packages]
 black = "==24.8.0"
