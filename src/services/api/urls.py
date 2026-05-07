@@ -19,7 +19,7 @@ router = Router(
 schema = build_schema(router)
 
 urlpatterns = [
-    path("api/", include((router.urls, "api"), namespace="api")),
+    path(router.prefix, include((router.urls, "api"), namespace="api")),
     path("docs/", SwaggerView.as_view(schema), name="docs"),
 ]
 
