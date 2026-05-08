@@ -1,4 +1,5 @@
 import json
+from typing import final, override
 
 from django.http import HttpResponse
 from oauth2_provider.views.introspect import (
@@ -9,7 +10,9 @@ from apps.common.services.http import apply_response_headers
 from services.oauth2_extensions.schemas import IntrospectTokenResponse
 
 
+@final
 class IntrospectTokenView(BaseIntrospectTokenView):
+    @override
     @staticmethod
     def get_token_response(token_value=None):
         original_response = BaseIntrospectTokenView.get_token_response(

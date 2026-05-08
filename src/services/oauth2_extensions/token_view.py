@@ -1,5 +1,6 @@
 import hashlib
 import json
+from typing import final, override
 
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
@@ -12,7 +13,9 @@ from apps.common.services.http import apply_response_headers
 from services.oauth2_extensions.schemas import TokenResponse, TokenUser
 
 
+@final
 class TokenView(BaseTokenView):
+    @override
     @method_decorator(sensitive_post_parameters("password"))
     def post(self, request, *args, **kwargs):
         url, headers, body, status = self.create_token_response(request)
