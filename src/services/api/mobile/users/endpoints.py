@@ -8,8 +8,8 @@ from dmr.endpoint import Endpoint
 from services.api.auth import AuthBearer
 from services.api.common.controllers import AuthenticatedController
 from services.api.mobile.users.exceptions import UserInactiveError
+from services.api.mobile.users.schemas import UserResponse
 from services.api.mobile.users.services.me import MeService
-from services.api.mobile.users.shemas import UserResponse
 
 
 @final

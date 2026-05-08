@@ -12,3 +12,20 @@ class TokenUser(CamelCaseModel):
     is_active: bool
     last_login: Optional[datetime.datetime] = None
     date_joined: Optional[datetime.datetime] = None
+
+
+class TokenResponse(CamelCaseModel):
+    access_token: str
+    expires_in: int
+    token_type: str
+    scope: str
+    refresh_token: Optional[str] = None
+    user: TokenUser
+
+
+class IntrospectTokenResponse(CamelCaseModel):
+    active: bool
+    scope: Optional[str] = None
+    exp: Optional[int] = None
+    client_id: Optional[str] = None
+    username: Optional[str] = None

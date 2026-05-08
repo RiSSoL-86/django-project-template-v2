@@ -8,7 +8,8 @@ from oauth2_provider.models import get_access_token_model
 from oauth2_provider.signals import app_authorized
 from oauth2_provider.views.base import TokenView as BaseTokenView
 
-from .schemas import TokenUser
+from apps.common.services.http import apply_response_headers
+from services.oauth2_extensions.schemas import TokenResponse, TokenUser
 
 
 class TokenView(BaseTokenView):
@@ -31,13 +32,16 @@ class TokenView(BaseTokenView):
                 app_authorized.send(sender=self, request=request, token=token)
 
                 # customize response
-                parsed_body["user"] = TokenUser.model_validate(
-                    token.user
-                ).model_dump(by_alias=True)
+                response_data = TokenResponse(
+                    access_token=parsed_body["access_token"],
+                    expires_in=parsed_body["expires_in"],
+                    token_type=parsed_body["token_type"],
+                    scope=parsed_body["scope"],
+                    refresh_token=parsed_body.get("refresh_token"),
+                    user=TokenUser.model_validate(token.user),
+                )
 
-                body = json.dumps(parsed_body, default=str)
+                body = response_data.model_dump_json(by_alias=True)
 
         response = HttpResponse(content=body, status=status)
-        for k, v in headers.items():
-            response[k] = v
-        return response
+        return apply_response_headers(response, headers)

@@ -1,6 +1,7 @@
 from django.urls import path
 from oauth2_provider import views as oauth2_views
 
+from services.oauth2_extensions.introspect_view import IntrospectTokenView
 from services.oauth2_extensions.token_view import TokenView
 
 urlpatterns = [
@@ -12,7 +13,7 @@ urlpatterns = [
     ),
     path(
         "introspect/",
-        oauth2_views.IntrospectTokenView.as_view(),
+        IntrospectTokenView.as_view(),
         name="introspect",
     ),
 ]

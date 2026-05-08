@@ -1,7 +1,7 @@
-from pydantic import BaseModel
+from services.api.common.schemas import CamelCaseModel
 
 
-class UserResponse(BaseModel):
+class UserResponse(CamelCaseModel):
     id: int
     email: str
     first_name: str
