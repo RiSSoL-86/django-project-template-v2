@@ -325,7 +325,7 @@ class SendEmailTestCase(SimpleTestCase):
         mock_email_class.return_value = mock_email_instance
 
         # Act & Assert
-        with self.assertRaises(Exception):
+        with self.assertRaisesRegex(Exception, "SMTP Error"):
             send_email(
                 template_name=self.template_name,
                 recipients=self.recipients,

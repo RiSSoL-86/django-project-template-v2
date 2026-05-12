@@ -11,11 +11,13 @@ class AuthenticatedController(Controller[PydanticSerializer]):
     def _auth_data(self) -> AuthData:
         """Helper property for retrieving authorization data."""
         auth = getattr(self.request, "auth", None)
-        if not isinstance(auth, (list, tuple)):
-            raise AttributeError(
-                f"Controller '{self.__class__.__name__}' requires authentication. "
-                "Make sure you have added 'auth = [AuthBearer()]' to the controller."
+        if not isinstance(auth, list | tuple):
+            msg = (
+                f"Controller '{self.__class__.__name__}' requires "
+                "authentication. Make sure you have added "
+                "'auth = [AuthBearer()]' to the controller."
             )
+            raise AttributeError(msg)
         return AuthData(*auth)
 
     @property

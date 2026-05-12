@@ -6,7 +6,7 @@ from services.api.mobile.users.exceptions import UserInactiveError
 
 @final
 class MeService:
-    async def execute(self, user: User):
+    async def execute(self, user: User) -> User:
         if not user.is_active:
             raise UserInactiveError("User is blocked")
         return user

@@ -1,17 +1,22 @@
-from typing import final, override
+from typing import TYPE_CHECKING, final, override
 
 from asgiref.sync import sync_to_async
 from django.core.exceptions import SuspiciousOperation
-from dmr.openapi.objects import SecurityScheme
+from dmr.openapi.objects import Reference, SecurityScheme
 from dmr.security import AsyncAuth
 from oauth2_provider.oauth2_backends import get_oauthlib_core
+
+if TYPE_CHECKING:
+    from dmr import Controller
+    from dmr.endpoint import Endpoint
+    from dmr.serializer import BaseSerializer
 
 
 @final
 class AuthBearer(AsyncAuth):
     @override
     @property
-    def security_schemes(self) -> dict[str, SecurityScheme]:
+    def security_schemes(self) -> dict[str, SecurityScheme | Reference]:
         return {
             "BearerAuth": SecurityScheme(type="http", scheme="bearer"),
         }
@@ -22,7 +27,9 @@ class AuthBearer(AsyncAuth):
         return {"BearerAuth": []}
 
     @override
-    async def __call__(self, endpoint, controller):
+    async def __call__(
+        self, endpoint: "Endpoint", controller: "Controller[BaseSerializer]"
+    ) -> "AuthBearer | None":
         request = controller.request
 
         auth_header = request.headers.get("Authorization")
@@ -37,12 +44,12 @@ class AuthBearer(AsyncAuth):
             )
         except ValueError as error:
             if str(error) == "Invalid hex encoding in query string.":
-                raise SuspiciousOperation(error)
+                raise SuspiciousOperation(error) from error
             raise
         else:
             if valid:
-                request.auth = (r.user, r.access_token)
+                request.auth = r.user, r.access_token  # type: ignore[attr-defined]
                 return self
 
-        request.oauth2_error = getattr(r, "oauth2_error", {})
+        request.oauth2_error = getattr(r, "oauth2_error", {})  # type: ignore[attr-defined]
         return None

@@ -14,7 +14,7 @@ from services.oauth2_extensions.schemas import IntrospectTokenResponse
 class IntrospectTokenView(BaseIntrospectTokenView):
     @override
     @staticmethod
-    def get_token_response(token_value=None):
+    def get_token_response(token_value=None) -> HttpResponse:
         original_response = BaseIntrospectTokenView.get_token_response(
             token_value
         )

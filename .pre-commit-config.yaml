@@ -1,5 +1,5 @@
 exclude: ^(.*static|.*media|.*migrations)
-default_stages: [ commit ]
+default_stages: [ pre-commit ]
 repos:
   - repo: https://github.com/jorisroovers/gitlint
     rev: v0.19.1
@@ -10,34 +10,38 @@ repos:
     rev: v4.6.0
     hooks:
       - id: check-toml
+        files: ^src/
       - id: end-of-file-fixer
-        stages: [ commit ]
+        stages: [ pre-commit ]
+        files: ^src/
       - id: trailing-whitespace
-        stages: [ commit ]
+        stages: [ pre-commit ]
+        files: ^src/
       - id: check-merge-conflict
+        files: ^src/
 
-  - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
+  - repo: local
     hooks:
-      - id: isort
-        name: isort (python)
-        args: [ --check-only ]
+      - id: ruff
+        name: ruff
+        entry: ruff check
+        args: [ --fix ]
+        language: system
+        types: [ python ]
+        files: ^src/
 
-  - repo: https://github.com/psf/black
-    rev: 24.8.0
-    hooks:
-      - id: black
-        name: black (python)
-        args: [ --check ]
+      - id: ruff-format
+        name: ruff-format
+        entry: ruff format
+        language: system
+        types: [ python ]
+        files: ^src/
 
-  - repo: https://github.com/pycqa/bandit
-    rev: 1.7.8
-    hooks:
-      - id: bandit
-        args: [ -ll ]
-
-  - repo: https://github.com/PyCQA/flake8
-    rev: 7.1.1
-    hooks:
-      - id: flake8
-        name: flake8 (python)
+      - id: mypy
+        name: mypy
+        entry: mypy
+        language: system
+        types: [ python ]
+        # MyPy needs to run on the whole project to check types across files
+        pass_filenames: false
+        args: [ "src" ]

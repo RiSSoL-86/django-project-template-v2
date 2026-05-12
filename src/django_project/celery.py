@@ -16,7 +16,7 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()
 
 
-def discover_celery_tasks():
+def discover_celery_tasks() -> None:
     """
     Custom function to discover and import all task modules
     from services.celery_tasks
@@ -27,7 +27,10 @@ def discover_celery_tasks():
         celery_tasks_package = importlib.import_module("services.celery_tasks")
 
         # Get the package path
-        package_path = Path(celery_tasks_package.__file__).parent
+        package_file = celery_tasks_package.__file__
+        if package_file is None:
+            return
+        package_path = Path(package_file).parent
 
         # Discover all Python modules in the package
         for _, module_name, is_pkg in pkgutil.iter_modules(

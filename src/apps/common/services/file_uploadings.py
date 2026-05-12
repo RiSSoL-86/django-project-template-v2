@@ -24,7 +24,7 @@ def upload_file_handler_path(
     return file_path
 
 
-def prefix_based_upload_handler(path: str) -> partial:
+def prefix_based_upload_handler(path: str) -> partial[str]:
     """
     Wrapper for `upload_file_handler_path` which allows to specify path prefix
     where a new file should be stored.

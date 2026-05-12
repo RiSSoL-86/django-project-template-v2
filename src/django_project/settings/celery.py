@@ -13,5 +13,6 @@ CELERY_BROKER_TRANSPORT_OPTIONS = {
 CELERY_BEAT_SCHEDULE = {}
 
 # Task autodiscovery is handled in django_project/celery.py
-# No need to manually list imports - discover_celery_tasks() handles this automatically
+# No need to manually list imports - discover_celery_tasks() handles this
+# automatically
 CELERY_IMPORTS = []

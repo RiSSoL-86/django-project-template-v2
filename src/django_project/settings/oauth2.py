@@ -14,8 +14,12 @@ OAUTH2_PROVIDER = {
     "REFRESH_TOKEN_EXPIRE_SECONDS": 1_209_600,  # 14 days
     "AUTHORIZATION_CODE_EXPIRE_SECONDS": 600,  # 10 minutes
     # Application settings
-    "CLIENT_ID_GENERATOR_CLASS": "oauth2_provider.generators.ClientIdGenerator",
-    "CLIENT_SECRET_GENERATOR_CLASS": "oauth2_provider.generators.ClientSecretGenerator",
+    "CLIENT_ID_GENERATOR_CLASS": (
+        "oauth2_provider.generators.ClientIdGenerator"
+    ),
+    "CLIENT_SECRET_GENERATOR_CLASS": (
+        "oauth2_provider.generators.ClientSecretGenerator"
+    ),
     "CLIENT_SECRET_GENERATOR_LENGTH": 128,
     # Security settings
     "ALLOWED_REDIRECT_URI_SCHEMES": ["http", "https"],
@@ -23,7 +27,9 @@ OAUTH2_PROVIDER = {
     "ALLOW_URI_WILDCARDS": False,
     # Server settings
     "OAUTH2_SERVER_CLASS": "oauthlib.oauth2.Server",
-    "OAUTH2_VALIDATOR_CLASS": "oauth2_provider.oauth2_validators.OAuth2Validator",
+    "OAUTH2_VALIDATOR_CLASS": (
+        "oauth2_provider.oauth2_validators.OAuth2Validator"
+    ),
     "OAUTH2_BACKEND_CLASS": "oauth2_provider.oauth2_backends.OAuthLibCore",
     # Extra settings
     "EXTRA_SERVER_KWARGS": {},

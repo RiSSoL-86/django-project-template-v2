@@ -24,64 +24,62 @@ class OAuth2EndpointsTestCase(TestCase):
         )
 
         # Create an OAuth2 application
+        self.raw_client_secret = "testsecret"
         self.application = Application.objects.create(
             name="Test App",
             user=self.user,
             client_type="confidential",
             authorization_grant_type="password",
-            client_secret="",
+            client_secret=self.raw_client_secret,
         )
 
     def _create_basic_auth_header(self):
         """Helper method to create Basic auth header"""
-        credentials = (
-            f"{self.application.client_id}:{self.application.client_secret}"
-        )
+        credentials = f"{self.application.client_id}:{self.raw_client_secret}"
         return f"Basic {base64.b64encode(credentials.encode()).decode()}"
 
     def test_token_endpoint_password_grant_success(self):
         """Test successful token request with password grant type"""
         # Arrange
-        auth_header = self._create_basic_auth_header()
         request_data = {
             "grant_type": "password",
             "username": "test@example.com",
             "password": "testpass123",
-            "scope": "read",
+            "client_id": self.application.client_id,
+            "client_secret": self.raw_client_secret,
         }
 
         # Act
         response = self.client.post(
             self.TOKEN_URL,
             data=request_data,
-            headers={"Authorization": auth_header},
+            HTTP_AUTHORIZATION=self._create_basic_auth_header(),
         )
 
         # Assert
         self.assertEqual(response.status_code, 200)
         data = response.json()
-        self.assertIn("access_token", data)
-        self.assertIn("token_type", data)
-        self.assertIn("expires_in", data)
-        self.assertEqual(data["token_type"], "Bearer")
-        self.assertIn("refresh_token", data)
+        self.assertIn("accessToken", data)
+        self.assertIn("tokenType", data)
+        self.assertIn("expiresIn", data)
+        self.assertEqual(data["tokenType"], "Bearer")
+        self.assertIn("refreshToken", data)
 
     def test_token_endpoint_invalid_credentials(self):
         """Test token request with invalid credentials"""
         # Arrange
-        auth_header = self._create_basic_auth_header()
         request_data = {
             "grant_type": "password",
             "username": "test@example.com",
             "password": "wrongpassword",
-            "scope": "read",
+            "client_id": self.application.client_id,
+            "client_secret": self.raw_client_secret,
         }
 
         # Act
         response = self.client.post(
             self.TOKEN_URL,
             data=request_data,
-            headers={"Authorization": auth_header},
         )
 
         # Assert
@@ -111,17 +109,17 @@ class OAuth2EndpointsTestCase(TestCase):
     def test_token_endpoint_missing_grant_type(self):
         """Test token request without grant_type"""
         # Arrange
-        auth_header = self._create_basic_auth_header()
         request_data = {
             "username": "test@example.com",
             "password": "testpass123",
+            "client_id": self.application.client_id,
+            "client_secret": self.raw_client_secret,
         }
 
         # Act
         response = self.client.post(
             self.TOKEN_URL,
             data=request_data,
-            headers={"Authorization": auth_header},
         )
 
         # Assert
@@ -132,78 +130,79 @@ class OAuth2EndpointsTestCase(TestCase):
     def test_refresh_token_grant(self):
         """Test refresh token grant type"""
         # Arrange
-        auth_header = self._create_basic_auth_header()
         initial_token_data = {
             "grant_type": "password",
             "username": "test@example.com",
             "password": "testpass123",
-            "scope": "read",
+            "client_id": self.application.client_id,
+            "client_secret": self.raw_client_secret,
         }
 
         # Act - Get initial token
         token_response = self.client.post(
             self.TOKEN_URL,
             data=initial_token_data,
-            headers={"Authorization": auth_header},
         )
 
         # Assert initial token response
         self.assertEqual(token_response.status_code, 200)
         token_data = token_response.json()
-        refresh_token = token_data["refresh_token"]
+        refresh_token = token_data["refreshToken"]
 
         # Arrange refresh token request
         refresh_data = {
             "grant_type": "refresh_token",
             "refresh_token": refresh_token,
-            "scope": "read",
+            "client_id": self.application.client_id,
+            "client_secret": self.raw_client_secret,
         }
 
         # Act - Use refresh token to get new access token
         response = self.client.post(
             self.TOKEN_URL,
             data=refresh_data,
-            headers={"Authorization": auth_header},
         )
 
         # Assert refresh token response
         self.assertEqual(response.status_code, 200)
         data = response.json()
-        self.assertIn("access_token", data)
-        self.assertIn("refresh_token", data)
+        self.assertIn("accessToken", data)
+        self.assertIn("refreshToken", data)
         # Should be a different access token
-        self.assertNotEqual(data["access_token"], token_data["access_token"])
+        self.assertNotEqual(data["accessToken"], token_data["accessToken"])
 
     def test_revoke_token(self):
         """Test token revocation"""
         # Arrange
-        auth_header = self._create_basic_auth_header()
         token_request_data = {
             "grant_type": "password",
             "username": "test@example.com",
             "password": "testpass123",
-            "scope": "read",
+            "client_id": self.application.client_id,
+            "client_secret": self.raw_client_secret,
         }
 
         # Act - Get initial token
         token_response = self.client.post(
             self.TOKEN_URL,
             data=token_request_data,
-            headers={"Authorization": auth_header},
         )
 
         # Assert token was obtained
         self.assertEqual(token_response.status_code, 200)
-        token = token_response.json()["access_token"]
+        token = token_response.json()["accessToken"]
 
         # Arrange revocation request
-        revoke_data = {"token": token}
+        revoke_data = {
+            "token": token,
+            "client_id": self.application.client_id,
+            "client_secret": self.raw_client_secret,
+        }
 
         # Act - Revoke the token
         response: HttpResponse = self.client.post(
             self.REVOKETOKEN_URL,
             data=revoke_data,
-            headers={"Authorization": auth_header},
         )
 
         # Assert revocation was successful
@@ -215,36 +214,36 @@ class OAuth2EndpointsTestCase(TestCase):
     def test_revoke_refresh_token(self):
         """Test refresh token revocation"""
         # Arrange
-        auth_header = self._create_basic_auth_header()
         initial_token_data = {
             "grant_type": "password",
             "username": "test@example.com",
             "password": "testpass123",
-            "scope": "read",
+            "client_id": self.application.client_id,
+            "client_secret": self.raw_client_secret,
         }
 
         # Act - Get initial token
         token_response = self.client.post(
             self.TOKEN_URL,
             data=initial_token_data,
-            headers={"Authorization": auth_header},
         )
 
         # Assert token was obtained
         self.assertEqual(token_response.status_code, 200)
-        refresh_token = token_response.json()["refresh_token"]
+        refresh_token = token_response.json()["refreshToken"]
 
         # Arrange revocation request
         revoke_data = {
             "token": refresh_token,
             "token_type_hint": "refresh_token",
+            "client_id": self.application.client_id,
+            "client_secret": self.raw_client_secret,
         }
 
         # Act - Revoke the refresh token
         response = self.client.post(
             self.REVOKETOKEN_URL,
             data=revoke_data,
-            headers={"Authorization": auth_header},
         )
 
         # Assert revocation was successful
@@ -254,13 +253,14 @@ class OAuth2EndpointsTestCase(TestCase):
         refresh_attempt_data = {
             "grant_type": "refresh_token",
             "refresh_token": refresh_token,
+            "client_id": self.application.client_id,
+            "client_secret": self.raw_client_secret,
         }
 
         # Act - Try to use the revoked refresh token
         refresh_response = self.client.post(
             self.TOKEN_URL,
             data=refresh_attempt_data,
-            headers={"Authorization": auth_header},
         )
 
         # Assert revoked token cannot be used

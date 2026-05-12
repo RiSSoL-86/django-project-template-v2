@@ -1,4 +1,4 @@
-from typing import Any, Union
+from typing import Any
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
@@ -7,9 +7,9 @@ from django.template.loader import render_to_string
 
 def send_email(
     template_name: str,
-    recipients: Union[str, list[str]],
-    context: dict[str, Any] = None,
-    from_email: str = None,
+    recipients: str | list[str],
+    context: dict[str, Any] | None = None,
+    from_email: str | None = None,
 ) -> None:
     """
     Generic email sending function that loads templates from Django templates
@@ -44,8 +44,8 @@ def send_email(
     # Extend context with built-in variables
     extended_context = {
         **context,
-        "site_url": settings.SITE_URL,
-        "project_name": settings.PROJECT_NAME,
+        "site_url": settings.SITE_URL,  # type: ignore[misc]
+        "project_name": settings.PROJECT_NAME,  # type: ignore[misc]
     }
     template_pref = f"emails/{template_name}"
 

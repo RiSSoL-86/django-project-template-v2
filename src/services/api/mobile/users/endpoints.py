@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import final, override
+from typing import TYPE_CHECKING, Any, final, override
 
 from django.http import HttpResponse
 from dmr import ResponseSpec
@@ -10,6 +10,9 @@ from services.api.common.controllers import AuthenticatedController
 from services.api.mobile.users.exceptions import UserInactiveError
 from services.api.mobile.users.schemas import UserResponse
 from services.api.mobile.users.services.me import MeService
+
+if TYPE_CHECKING:
+    from dmr import Controller
 
 
 @final
@@ -31,7 +34,7 @@ class MeController(AuthenticatedController):
     async def handle_async_error(
         self,
         endpoint: Endpoint,
-        controller: "MeController",
+        controller: "Controller[Any]",
         exc: Exception,
     ) -> HttpResponse:
         """Handle custom errors for this controller."""

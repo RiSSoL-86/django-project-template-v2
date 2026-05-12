@@ -1,14 +1,29 @@
+from typing import TYPE_CHECKING, Any
+
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import UserManager as DjangoUserManager
 
+if TYPE_CHECKING:
+    from apps.users.models import User
+
 
 class UserManager(DjangoUserManager):
-    def create_user(self, email, password=None, **extra_fields):
+    def create_user(
+        self,
+        email: str | None = None,
+        password: str | None = None,
+        **extra_fields: Any,
+    ) -> "User":
         extra_fields.setdefault("is_staff", False)
         extra_fields.setdefault("is_superuser", False)
         return self._create_user(email, password, **extra_fields)
 
-    def create_superuser(self, email, password=None, **extra_fields):
+    def create_superuser(
+        self,
+        email: str | None = None,
+        password: str | None = None,
+        **extra_fields: Any,
+    ) -> "User":
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
 
@@ -19,7 +34,12 @@ class UserManager(DjangoUserManager):
 
         return self._create_user(email, password, **extra_fields)
 
-    def _create_user(self, email, password, **extra_fields):
+    def _create_user(
+        self,
+        email: str | None,
+        password: str | None,
+        **extra_fields: Any,
+    ) -> "User":
         if not email:
             raise ValueError("Users must have an email address")
 
@@ -29,6 +49,6 @@ class UserManager(DjangoUserManager):
         user.save(using=self._db)
         return user
 
-    def get_by_natural_key(self, username):
+    def get_by_natural_key(self, username: str | None) -> "User":
         ci_field = f"{self.model.USERNAME_FIELD}__iexact"
         return self.get(**{ci_field: username})

@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from apps.users.models import User
 
 
-class UserAdmin(DjangoUserAdmin):
+class UserAdmin(DjangoUserAdmin):  # type: ignore
     list_display = ("id", "email", "first_name", "last_name", "is_staff")
     list_display_links = list_display
     ordering = ("email",)

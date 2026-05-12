@@ -2,7 +2,7 @@ import hashlib
 import json
 from typing import final, override
 
-from django.http import HttpResponse
+from django.http import HttpRequest, HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_post_parameters
 from oauth2_provider.models import get_access_token_model
@@ -17,7 +17,7 @@ from services.oauth2_extensions.schemas import TokenResponse, TokenUser
 class TokenView(BaseTokenView):
     @override
     @method_decorator(sensitive_post_parameters("password"))
-    def post(self, request, *args, **kwargs):
+    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         url, headers, body, status = self.create_token_response(request)
         if status == 200:
             parsed_body = json.loads(body)

@@ -10,9 +10,9 @@ run:
 	pipenv run python src/manage.py runserver 0:8000
 
 lint:
-	pipenv run black src/
-	pipenv run isort src/
-	pipenv run flake8 src/
+	pipenv run ruff check src/ --fix
+	pipenv run ruff format src/
+	pipenv run mypy src/
 
 shell:
 	pipenv run python src/manage.py shell
