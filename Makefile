@@ -1,18 +1,19 @@
 migrate:
-	pipenv run python src/manage.py migrate --fake
-	pipenv run python src/manage.py makemigrations
 	pipenv run python src/manage.py migrate
 
-test:
-	pipenv run python src/manage.py test
+makemigrations:
+	pipenv run python src/manage.py makemigrations
 
-run:
-	pipenv run python src/manage.py runserver 0:8000
+test:
+	pipenv run pytest src/
 
 lint:
 	pipenv run ruff check src/ --fix
 	pipenv run ruff format src/
 	pipenv run mypy src/
+
+run:
+	pipenv run python src/manage.py runserver
 
 shell:
 	pipenv run python src/manage.py shell

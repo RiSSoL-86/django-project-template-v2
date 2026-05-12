@@ -9,7 +9,7 @@ from apps.users.managers import UserManager
 class User(AbstractUser):
     username = None
 
-    email = models.EmailField(_("email"))
+    email = models.EmailField(_("email"), unique=True)
     first_name = models.CharField(_("first name"), max_length=80)
     last_name = models.CharField(_("lastname"), max_length=80)
 

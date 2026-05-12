@@ -69,7 +69,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "email",
-                    models.EmailField(max_length=254, verbose_name="email"),
+                    models.EmailField(
+                        max_length=254, unique=True, verbose_name="email"
+                    ),
                 ),
                 (
                     "first_name",

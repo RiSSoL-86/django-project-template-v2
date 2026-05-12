@@ -12,7 +12,7 @@ class CamelCaseModel(BaseModel):
             validation_alias=alias_generators.to_camel,
             serialization_alias=alias_generators.to_camel,
         ),
-        populate_by_name=True,
+        validate_by_name=True,
         from_attributes=True,
     )
 
