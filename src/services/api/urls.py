@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from django.urls import include, path
 from dmr.openapi import build_schema
 from dmr.openapi.views import SwaggerView
@@ -5,6 +7,10 @@ from dmr.plugins.pydantic import PydanticSerializer
 from dmr.routing import Router, build_404_handler, build_500_handler
 
 from services.api.mobile import urls as mobile_urls
+
+if TYPE_CHECKING:
+    from django.urls import URLPattern, URLResolver
+
 
 router = Router(
     prefix="",
@@ -18,7 +24,7 @@ router = Router(
 
 schema = build_schema(router)
 
-urlpatterns = [
+urlpatterns: "list[URLPattern | URLResolver]" = [
     path(router.prefix, include((router.urls, "api"), namespace="api")),
     path("docs/", SwaggerView.as_view(schema), name="docs"),
 ]

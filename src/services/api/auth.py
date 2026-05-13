@@ -1,14 +1,15 @@
-from typing import TYPE_CHECKING, final, override
+from typing import TYPE_CHECKING, Union, final, override
 
 from asgiref.sync import sync_to_async
 from django.core.exceptions import SuspiciousOperation
-from dmr.openapi.objects import Reference, SecurityScheme
+from dmr.openapi.objects import SecurityScheme
 from dmr.security import AsyncAuth
 from oauth2_provider.oauth2_backends import get_oauthlib_core
 
 if TYPE_CHECKING:
     from dmr import Controller
     from dmr.endpoint import Endpoint
+    from dmr.openapi.objects import Reference
     from dmr.serializer import BaseSerializer
 
 
@@ -16,7 +17,9 @@ if TYPE_CHECKING:
 class AuthBearer(AsyncAuth):
     @override
     @property
-    def security_schemes(self) -> dict[str, SecurityScheme | Reference]:
+    def security_schemes(
+        self,
+    ) -> dict[str, Union[SecurityScheme, "Reference"]]:
         return {
             "BearerAuth": SecurityScheme(type="http", scheme="bearer"),
         }

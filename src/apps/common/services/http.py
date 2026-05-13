@@ -1,11 +1,12 @@
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from django.http import HttpResponse
+if TYPE_CHECKING:
+    from django.http import HttpResponse
 
 
 def apply_response_headers(
-    response: HttpResponse, headers: dict[str, Any]
-) -> HttpResponse:
+    response: "HttpResponse", headers: dict[str, Any]
+) -> "HttpResponse":
     """
     Applies headers from a dictionary to a Django HttpResponse.
     """

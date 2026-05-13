@@ -10,7 +10,7 @@ from oauth2_provider.signals import app_authorized
 from oauth2_provider.views.base import TokenView as BaseTokenView
 
 from apps.common.services.http import apply_response_headers
-from services.oauth2_extensions.schemas import TokenResponse, TokenUser
+from services.oauth2_extensions.schemas import TokenResponse
 
 
 @final
@@ -35,13 +35,8 @@ class TokenView(BaseTokenView):
                 app_authorized.send(sender=self, request=request, token=token)
 
                 # customize response
-                response_data = TokenResponse(
-                    access_token=parsed_body["access_token"],
-                    expires_in=parsed_body["expires_in"],
-                    token_type=parsed_body["token_type"],
-                    scope=parsed_body["scope"],
-                    refresh_token=parsed_body.get("refresh_token"),
-                    user=TokenUser.model_validate(token.user),
+                response_data = TokenResponse.model_validate(
+                    {**parsed_body, "user": token.user}
                 )
 
                 body = response_data.model_dump_json(by_alias=True)

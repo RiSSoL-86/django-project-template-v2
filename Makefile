@@ -8,8 +8,8 @@ test:
 	pipenv run pytest src/
 
 lint:
-	pipenv run ruff check src/ --fix
 	pipenv run ruff format src/
+	pipenv run ruff check src/ --fix
 	pipenv run mypy src/
 
 run:
