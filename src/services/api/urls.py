@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 router = Router(
-    prefix="",
+    prefix="api/",
     urls=[
         path(
             mobile_urls.router.prefix,
@@ -26,7 +26,7 @@ schema = build_schema(router)
 
 urlpatterns: "list[URLPattern | URLResolver]" = [
     path(router.prefix, include((router.urls, "api"), namespace="api")),
-    path("docs/", SwaggerView.as_view(schema), name="docs"),
+    path(f"{router.prefix}docs/", SwaggerView.as_view(schema), name="docs"),
 ]
 
 handler404 = build_404_handler(

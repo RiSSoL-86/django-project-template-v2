@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 urlpatterns: "list[URLPattern | URLResolver]" = [
     path("admin/", admin.site.urls),
     path("oauth2/", include("services.oauth2_extensions.urls")),
-    path("api/", include("services.api.urls")),
+    path("", include("services.api.urls")),
 ]
 # disabled for non-debug mode or non-local prefix
 if settings.DEBUG:
