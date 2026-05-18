@@ -6,7 +6,6 @@ from oauth2_provider.views.introspect import (
     IntrospectTokenView as BaseIntrospectTokenView,
 )
 
-from apps.common.services.http import apply_response_headers
 from services.oauth2_extensions.schemas import IntrospectTokenResponse
 
 
@@ -22,8 +21,8 @@ class IntrospectTokenView(BaseIntrospectTokenView):
 
         response_data = IntrospectTokenResponse(**data)
 
-        response = HttpResponse(
+        return HttpResponse(
             content=response_data.model_dump_json(by_alias=True),
             status=original_response.status_code,
+            headers=original_response.headers,
         )
-        return apply_response_headers(response, original_response.headers)

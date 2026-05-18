@@ -9,7 +9,6 @@ from oauth2_provider.models import get_access_token_model
 from oauth2_provider.signals import app_authorized
 from oauth2_provider.views.base import TokenView as BaseTokenView
 
-from apps.common.services.http import apply_response_headers
 from services.oauth2_extensions.schemas import TokenResponse
 
 
@@ -41,5 +40,4 @@ class TokenView(BaseTokenView):
 
                 body = response_data.model_dump_json(by_alias=True)
 
-        response = HttpResponse(content=body, status=status)
-        return apply_response_headers(response, headers)
+        return HttpResponse(content=body, status=status, headers=headers)
