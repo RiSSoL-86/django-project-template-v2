@@ -34,14 +34,14 @@ jobs:
           pipenv sync --dev --system
 
       - name: Ruff check
-        run: ruff check src
+        run: pipenv run ruff check src
 
       - name: Ruff format
-        run: ruff format --check src
+        run: pipenv run ruff format --check src
 
       - name: Mypy
-        run: mypy src
+        run: pipenv run mypy src
 
       - name: Pytest
         working-directory: src
-        run: pytest
+        run: pipenv run pytest
