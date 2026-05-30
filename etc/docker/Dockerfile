@@ -7,7 +7,7 @@ RUN apt update -y && \
     rm -rf /var/cache/apt/lists
 
 COPY Pipfile Pipfile.lock /app/
-RUN pip install pipenv gunicorn && pipenv install --deploy --system
+RUN pip install pipenv gunicorn "uvicorn[standard]" && pipenv install --deploy --system
 
 COPY src/ /app/
 
@@ -15,4 +15,4 @@ ENV PORT=8080
 ENV WEB_CONCURRENCY=1
 
 EXPOSE ${PORT}
-CMD ["gunicorn", "django_project.wsgi:application", "--timeout", "30", "--max-requests", "65536", "--max-requests-jitter", "200", "--access-logfile", "-", "--capture-output"]
+CMD gunicorn django_project.asgi:application --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:${PORT} --timeout 30 --max-requests 65536 --max-requests-jitter 200 --access-logfile - --capture-output
